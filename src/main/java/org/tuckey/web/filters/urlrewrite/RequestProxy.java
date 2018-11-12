@@ -193,6 +193,10 @@ public class RequestProxy {
             method = putMethod;
         } else if ("DELETE".equalsIgnoreCase(methodName)) {
             method = new DeleteMethod();
+        } else if ("OPTIONS".equalsIgnoreCase(methodName)) {
+            method = new OptionsMethod();
+        } else if ("HEAD".equalsIgnoreCase(methodName)) {
+            method = new HeadMethod();
         } else {
             log.warn("Unsupported HTTP method requested: " + hsRequest.getMethod());
             return null;
