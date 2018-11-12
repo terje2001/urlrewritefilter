@@ -76,9 +76,9 @@ public class RequestProxy {
      * @throws java.io.IOException Passed on from the connection logic.
      */
     public static void execute(final String target, final HttpServletRequest hsRequest, final HttpServletResponse hsResponse) throws IOException {
-        if ( log.isInfoEnabled() ) {
-            log.info("execute, target is " + target);
-            log.info("response commit state: " + hsResponse.isCommitted());
+        if ( log.isDebugEnabled() ) {
+            log.debug("execute, target is " + target);
+            log.debug("response commit state: " + hsResponse.isCommitted());
         }
 
         if (StringUtils.isBlank(target)) {
@@ -86,7 +86,7 @@ public class RequestProxy {
             return;
         }
 
-        log.info("checking url");
+        log.debug("checking url");
         final URL url;
         try {
             url = new URL(target);
@@ -95,7 +95,7 @@ public class RequestProxy {
             return;
         }
 
-        log.info("seting up the host configuration");
+        log.debug("seting up the host configuration");
 
         final HostConfiguration config = new HostConfiguration();
 
@@ -105,7 +105,7 @@ public class RequestProxy {
         final int port = url.getPort() != -1 ? url.getPort() : url.getDefaultPort();
         config.setHost(url.getHost(), port, url.getProtocol());
 
-        if ( log.isInfoEnabled() ) log.info("config is " + config.toString());
+        if ( log.isDebugEnabled() ) log.debug("config is " + config.toString());
 
         final HttpMethod targetRequest = setupProxyRequest(hsRequest, url);
         if (targetRequest == null) {
@@ -115,10 +115,10 @@ public class RequestProxy {
 
         //perform the reqeust to the target server
         final HttpClient client = new HttpClient(new SimpleHttpConnectionManager());
-        if (log.isInfoEnabled()) {
-            log.info("client state" + client.getState());
-            log.info("client params" + client.getParams().toString());
-            log.info("executeMethod / fetching data ...");
+        if (log.isDebugEnabled()) {
+            log.debug("client state" + client.getState());
+            log.debug("client params" + client.getParams().toString());
+            log.debug("executeMethod / fetching data ...");
         }
 
         final int result;
@@ -143,7 +143,7 @@ public class RequestProxy {
             copyStream(originalResponseStream, responseStream);
         }
 
-        log.info("set up response, result code was " + result);
+        log.debug("set up response, result code was " + result);
     }
 
     public static void copyStream(InputStream in, OutputStream out) throws IOException {
@@ -229,21 +229,21 @@ public class RequestProxy {
                 Enumeration values = hsRequest.getHeaders(headerName);
                 while (values.hasMoreElements()) {
                     String headerValue = (String) values.nextElement();
-                    log.info("setting proxy request parameter:" + headerName + ", value: " + headerValue);
+                    log.debug("setting proxy request parameter:" + headerName + ", value: " + headerValue);
                     method.addRequestHeader(headerName, headerValue);
                 }
             }
         }
 
-        if ( log.isInfoEnabled() ) log.info("proxy query string " + method.getQueryString());
+        if ( log.isDebugEnabled() ) log.debug("proxy query string " + method.getQueryString());
         return method;
     }
 
     private static void setupResponseHeaders(HttpMethod httpMethod, HttpServletResponse hsResponse) {
-        if ( log.isInfoEnabled() ) {
-            log.info("setupResponseHeaders");
-            log.info("status text: " + httpMethod.getStatusText());
-            log.info("status line: " + httpMethod.getStatusLine());
+        if ( log.isDebugEnabled() ) {
+            log.debug("setupResponseHeaders");
+            log.debug("status text: " + httpMethod.getStatusText());
+            log.debug("status line: " + httpMethod.getStatusLine());
         }
 
         //filter the headers, which are copied from the proxy response. The http lib handles those itself.
@@ -265,7 +265,7 @@ public class RequestProxy {
             }
 
             hsResponse.addHeader(h.getName(), h.getValue());
-            if ( log.isInfoEnabled() ) log.info("setting response parameter:" + h.getName() + ", value: " + h.getValue());
+            if ( log.isDebugEnabled() ) log.debug("setting response parameter:" + h.getName() + ", value: " + h.getValue());
         }
         //fixme what about the response footers? (httpMethod.getResponseFooters())
 
